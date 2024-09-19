@@ -2,11 +2,37 @@ package main
 
 import "fmt"
 
+const Operation (
+	Sum = '+'
+	Subtraction = '-'
+	Multiplication = '*'
+	Division = '/'
+)
+
 func main() {
 	var expression string
 	fmt.Println("Type the expression")
 	fmt.Scanf("%s", &expression)
-	fmt.Printf("%s", expression)
+
+}
+
+func calculateSums(expression string) float32 {
+	var parts []string
+	var operations []Operation
+
+	var parenthesesStack 
+}
+
+func calculateMultiplications(expression string) float32 {
+	var parts []string
+	var operations []Operation
+	
+}
+
+func resolveParentheses(expression string) float32 {
+	var parts []string
+	var operations []Operation
+	
 }
 // func main() {
 // 	var n1, n2 float32
