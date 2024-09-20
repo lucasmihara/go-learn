@@ -1,39 +1,52 @@
 package main
 
-import "fmt"
-
-const Operation (
-	Sum = '+'
-	Subtraction = '-'
-	Multiplication = '*'
-	Division = '/'
+import (
+	"fmt"
+	"regexp"
 )
+
+// const Operation (
+// 	Sum = '+'
+// 	Subtraction = '-'
+// 	Multiplication = '*'
+// 	Division = '/'
+// )
 
 func main() {
 	var expression string
 	fmt.Println("Type the expression")
 	fmt.Scanf("%s", &expression)
-
-}
-
-func calculateSums(expression string) float32 {
-	var parts []string
-	var operations []Operation
-
-	var parenthesesStack 
-}
-
-func calculateMultiplications(expression string) float32 {
-	var parts []string
-	var operations []Operation
 	
+	isInvalid, err := regexp.MatchString(`[^0-9\(\)\+\-\*\/]+`, expression)
+	if err != nil || isInvalid {
+		fmt.Println("The Expression is invalid")
+		return
+	}
+
 }
 
-func resolveParentheses(expression string) float32 {
-	var parts []string
-	var operations []Operation
+// func calculateSums(expression string) float32 {
+// 	var parts []string
+// 	var operations []Operation
+// 	parenthesesCount := 0
+
+// 	for start, end := 0; end < len(expression); end++ {
+
+// 	}
+// }
+
+// func calculateMultiplications(expression string) float32 {
+// 	var parts []string
+// 	var operations []Operation
 	
-}
+// }
+
+// func resolveParentheses(expression string) float32 {
+// 	var parts []string
+// 	var operations []Operation
+	
+// }
+
 // func main() {
 // 	var n1, n2 float32
 // 	var operation rune
