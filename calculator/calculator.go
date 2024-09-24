@@ -3,37 +3,98 @@ package main
 import (
 	"fmt"
 	"regexp"
+	"slices"
+	"strconv"
 )
 
-// const Operation (
-// 	Sum = '+'
-// 	Subtraction = '-'
-// 	Multiplication = '*'
-// 	Division = '/'
-// )
+const (
+	Sum byte = '+'
+	Subtraction = '-'
+	Multiplication = '*'
+	Division = '/'
+)
 
 func main() {
 	var expression string
 	fmt.Println("Type the expression")
 	fmt.Scanf("%s", &expression)
 	
-	isInvalid, err := regexp.MatchString(`[^0-9\(\)\+\-\*\/]+`, expression)
-	if err != nil || isInvalid {
-		fmt.Println("The Expression is invalid")
+	if !isValid(expression) {
+		fmt.Println("The expression is invalid")
 		return
 	}
-
+	
+	result := calculateSums(expression)
+	fmt.Println(result)
 }
 
-// func calculateSums(expression string) float32 {
-// 	var parts []string
-// 	var operations []Operation
-// 	parenthesesCount := 0
+func isValid(expression string) bool {
+	isInvalid, err := regexp.MatchString(`[^0-9\(\)\+\-\*\/]+`, expression)
+	if err != nil || isInvalid {
+		return false
+	}
 
-// 	for start, end := 0; end < len(expression); end++ {
+	parenthesesCount := 0
+	for i := 0; i < len(expression); i++ {
+		if expression[i] == '(' {
+			parenthesesCount++
+		} else if expression[i] == ')' {
+			parenthesesCount--
+			if parenthesesCount < 0 {
+				return false
+			}
+		}
+	}
+	if parenthesesCount > 0 {
+		return false
+	}
 
-// 	}
-// }
+	return true
+}
+
+func calculateSums(expression string) float64 {
+	parts, operations := breakParts(expression, []byte {Sum, Subtraction})
+	convertedValue, _ := strconv.ParseFloat(parts[0], 32)
+	result := convertedValue
+	for i := 0; i < len(operations); i++ {
+		convertedValue, _ = strconv.ParseFloat(parts[i + 1], 32)
+		switch operations[i] {
+			case Sum:
+				result += convertedValue
+			case Subtraction:
+				result -= convertedValue
+		}
+	}
+	// for i := 0; i < len(parts); i++ {
+	// 	fmt.Printf("%s ", parts[i])
+	// }
+	// for i := 0; i < len(operations); i++ {
+	// 	fmt.Printf("%c ", operations[i])
+	// }
+	return result
+}
+
+func breakParts(expression string, operators []byte) ([]string, []byte) {
+	var parts []string
+	var operations []byte
+	parenthesesCount := 0
+	
+	start, end := 0, 0
+	for ; end < len(expression); end++ {
+		if expression[end] == '(' {
+			parenthesesCount++
+		} else if expression[end] == ')' {
+			parenthesesCount--
+		} else if parenthesesCount == 0 && (slices.Contains(operators, expression[end])) {
+			parts = append(parts, expression[start:end])
+			operations = append(operations, expression[end])
+			start = end + 1
+		}
+	}
+	parts = append(parts, expression[start:end])
+
+	return parts, operations
+}
 
 // func calculateMultiplications(expression string) float32 {
 // 	var parts []string
