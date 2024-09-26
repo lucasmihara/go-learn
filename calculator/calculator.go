@@ -6,6 +6,9 @@ import (
 	"slices"
 	"strconv"
 	"errors"
+	"strings"
+	"bufio"
+	"os"
 )
 
 const (
@@ -16,10 +19,11 @@ const (
 )
 
 func main() {
-	var expression string
 	fmt.Println("Type the expression")
-	fmt.Scanf("%s", &expression)
-	
+
+	expression := readExpression()
+	expression = prepareExpression(expression)
+
 	if !isValid(expression) {
 		fmt.Println("The expression is invalid")
 		return
@@ -107,7 +111,7 @@ func breakParts(expression string, operators []byte) ([]string, []byte) {
 			parenthesesCount++
 		} else if expression[end] == ')' {
 			parenthesesCount--
-		} else if parenthesesCount == 0 && (slices.Contains(operators, expression[end])) {
+		} else if end != 0 && parenthesesCount == 0 && (slices.Contains(operators, expression[end])) {
 			parts = append(parts, expression[start:end])
 			operations = append(operations, expression[end])
 			start = end + 1
@@ -119,7 +123,7 @@ func breakParts(expression string, operators []byte) ([]string, []byte) {
 }
 
 func isValid(expression string) bool {
-	isInvalid, err := regexp.MatchString(`[^0-9\(\)\+\-\*\/]+`, expression)
+	isInvalid, err := regexp.MatchString(`[^0-9\(\)\+\-\*\/\.]+`, expression)
 	if err != nil || isInvalid {
 		return false
 	}
@@ -139,5 +143,35 @@ func isValid(expression string) bool {
 		return false
 	}
 
+	lastCharWasOperator := false
+	for i := 0; i < len(expression); i++ {
+		if slices.Contains([]byte { Sum, Subtraction, Multiplication, Division }, expression[i]) {
+			if lastCharWasOperator {
+				return false
+			}
+			lastCharWasOperator = true
+		} else {
+			lastCharWasOperator = false
+		}
+	}
+
 	return true
+}
+
+func prepareExpression(expression string) string {
+	var stringBuilder strings.Builder
+	for i := 0; i < len(expression); i++ {
+		if expression[i] != ' ' {
+			stringBuilder.WriteByte(expression[i])
+		}
+	}
+	return stringBuilder.String()
+}
+
+func readExpression() string {
+	reader := bufio.NewReader(os.Stdin)
+	line, _ := reader.ReadString('\r')
+	expression := line[:len(line) - 1]
+
+	return expression
 }
