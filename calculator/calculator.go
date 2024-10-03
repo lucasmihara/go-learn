@@ -19,21 +19,40 @@ const (
 )
 
 func main() {
-	fmt.Println("Type the expression")
+	var expressionsHistory []string
 
-	expression := readExpression()
-	expression = prepareExpression(expression)
+	fmt.Println("Type your expressions.")
+	fmt.Println("Type \"history\" to access your expressions history.")
+	fmt.Println("Press ^C to exit")
+	for ;; {
+		fmt.Fprintf(os.Stdin, "1")
+		fmt.Fprintf(os.Stdout, "1")
+		expression := readExpression()
+		if expression == "history" {
+			if len(expressionsHistory) == 0 {
+				fmt.Println("Your history is empty")
+				continue
+			}
+			for index, expression := range expressionsHistory {
+				fmt.Printf("%d: %s\n", index + 1, expression)
+			}
+			continue
+		}
+		expression = prepareExpression(expression)
+		
+		if !isValid(expression) {
+			fmt.Println("The expression is invalid")
+			continue
+		}
+		
+		result, err := calculateSums(expression)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
 
-	if !isValid(expression) {
-		fmt.Println("The expression is invalid")
-		return
-	}
-	
-	result, err := calculateSums(expression)
-	if err != nil {
-		fmt.Println(err)
-	} else {
 		fmt.Println(result)
+		expressionsHistory = append(expressionsHistory, expression)
 	}
 }
 
@@ -123,6 +142,9 @@ func breakParts(expression string, operators []byte) ([]string, []byte) {
 }
 
 func isValid(expression string) bool {
+	if len(expression) == 0 {
+		return false
+	}
 	isInvalid, err := regexp.MatchString(`[^0-9\(\)\+\-\*\/\.]+`, expression)
 	if err != nil || isInvalid {
 		return false
